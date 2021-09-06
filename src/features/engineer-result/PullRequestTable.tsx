@@ -10,7 +10,11 @@ import {
 import Diff, { Added, Removed } from '../engineer-overview/Diff';
 import { SortToggleBase } from '../engineer-overview/SortToggle';
 import { Direction, EngineerBatchResult } from '../github/types';
-import { compareNumbers, compareStrings, swapDirection } from '../engineer-overview/compare';
+import {
+  compareNumbers,
+  compareStrings,
+  swapDirection,
+} from '../engineer-overview/compare';
 
 interface PullRequestTableProps {
   engineerResult: EngineerBatchResult;

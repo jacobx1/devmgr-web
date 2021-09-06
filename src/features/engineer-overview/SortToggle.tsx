@@ -1,9 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
-import {
-  ColumnType,
-  engineerOverviewSlice,
-} from './engineerOverviewSlice';
+import { ColumnType, engineerOverviewSlice } from './engineerOverviewSlice';
 import { useAppDispatch, useAppSelector } from '../../app/store';
 import { Direction } from '../github/types';
 

@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { engineerOverviewSlice } from '../features/engineer-overview/engineerOverviewSlice';
-import { TypedUseSelectorHook, useDispatch, useSelector,  } from 'react-redux';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { settingsReducerSlice } from '../features/settings/settingsSlice';
 import githubSlice from '../features/github/githubSlice';
 

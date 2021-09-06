@@ -15,10 +15,10 @@ const githubSlice = createSlice({
     setData(state, action: PayloadAction<EngineerBatchResult[]>) {
       state.data = action.payload;
     },
-    setStartEndDate(state, action: PayloadAction<{ start: Date, end: Date }>) {
+    setStartEndDate(state, action: PayloadAction<{ start: Date; end: Date }>) {
       state.pickedEndDate = action.payload.end;
       state.pickedStartDate = action.payload.start;
-    }
+    },
   },
 });
 
