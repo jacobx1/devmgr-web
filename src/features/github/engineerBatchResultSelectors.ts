@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { EngineerBatchResult } from './types';
 import { averageCollection, getPrsPerWeek } from './util/calculations';
 
@@ -15,6 +16,17 @@ export const totalPrContributionsSelector = (er: EngineerBatchResult) =>
 
 export const averagePrsPerWeekSelector = (er: EngineerBatchResult) =>
   averageCollection(getPrsPerWeek(er.result).map((item) => item.prs.length));
+
+export const averageCycleTimeSelector = (er: EngineerBatchResult) =>
+  averageCollection(
+    er.result.pullRequests.nodes
+      .map((node) =>
+        node.merged
+          ? moment(node.mergedAt).diff(node.createdAt, 'h') / 24
+          : undefined
+      )
+      .filter((item) => item !== undefined)
+  );
 
 export const codeLinesAddedSelector = (er: EngineerBatchResult) =>
   er.result.pullRequests.nodes.reduce(

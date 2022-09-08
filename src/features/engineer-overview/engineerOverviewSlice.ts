@@ -9,7 +9,8 @@ export type ColumnType =
   | 'repoCount'
   | 'commits'
   | 'prsPerWeek'
-  | 'code';
+  | 'code'
+  | 'cycle';
 
 export const engineerOverviewSlice = createSlice({
   name: 'engineerOverview',

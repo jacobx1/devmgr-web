@@ -4,7 +4,7 @@ import ContributionOverTimeGraph from './ContributionOverTimeGraphChart';
 import PullRequestTable from './PullRequestTable';
 import IssueCommentsTable from './IssueCommentsTable';
 import SummaryInfo from './SummaryInfo';
-import { EngineerBatchResult } from '../../features/github/EngineerBatchResult';
+import { EngineerBatchResult } from '../github/types';
 
 interface EngineerResultProps {
   result: EngineerBatchResult;

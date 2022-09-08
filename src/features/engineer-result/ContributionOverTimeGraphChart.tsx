@@ -3,6 +3,35 @@ import { Line } from 'react-chartjs-2';
 import moment from 'moment';
 import { FullReportQueryResult } from '../github/fullReportQuery';
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale,
+  TimeSeriesScale,
+  Filler,
+  ChartDataset,
+} from 'chart.js';
+import 'chartjs-adapter-moment';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale,
+  TimeSeriesScale,
+  Filler
+);
+
 function movingAvg(array, count, qualifier) {
   // calculate average for subarray
   var avg = function (array, qualifier) {
@@ -37,10 +66,8 @@ function movingAvg(array, count, qualifier) {
 }
 
 const createdAtByWeekReducer = (extractor) => (prev, curr) => {
-  console.log(curr.createdAt);
   const startOfWeekMoment = moment(curr.createdAt).startOf('week');
-  console.log(startOfWeekMoment);
-  const startOfWeek = startOfWeekMoment.toDate();
+  const startOfWeek = startOfWeekMoment;
   const previousBatch = prev[prev.length - 1];
   if (previousBatch === undefined) {
     return [
@@ -76,7 +103,7 @@ const createdAtByWeekReducer = (extractor) => (prev, curr) => {
       ...prev,
       ...pad,
       {
-        x: startOfWeek,
+        x: startOfWeek.toDate(),
         y: extractor(curr),
       },
     ];
@@ -140,7 +167,7 @@ const normalizeDatesForSeries = (series: Chart.ChartDataSets[]) => {
 };
 
 const getSeries = (data: FullReportQueryResult) => {
-  const series: Chart.ChartDataSets[] = [];
+  [];
   const seriesReducer = createdAtByWeekReducer(() => 1);
   const datesAndCountsPerWeek = data.pullRequests.nodes.reduce(
     seriesReducer,
@@ -157,39 +184,35 @@ const getSeries = (data: FullReportQueryResult) => {
     .filter((node) => !!node.pullRequest)
     .reduce(seriesReducer, []);
 
-  series.push(
+  const series = [
     {
       label: 'Pull requests',
       data: datesAndCountsPerWeek,
       backgroundColor: '#28a745',
-      stack: 'contributions',
     },
     {
       label: 'Issues created',
       data: issuesDatesAndCounts,
       backgroundColor: '#17a2b8',
-      stack: 'contributions',
     },
     {
       label: 'Issue comments',
       data: issueCommentsDatesCounts,
       backgroundColor: '#007bff',
-      stack: 'contributions',
     },
     {
       label: 'PR Comments',
       data: prComments,
       backgroundColor: '#20c997',
-      stack: 'contributions',
-    }
-  );
+    },
+  ].filter((serie) => serie.data?.length > 0);
 
   normalizeDatesForSeries(series);
 
   return series;
 };
 
-const getAverages = (data: Chart.ChartDataSets[]) => {
+const getAverages = (data: ChartDataset<'line'>[]) => {
   return data.map((item) => {
     const movingAverage = movingAvg(
       (item.data as any[]).map((point) => point.y),
@@ -219,7 +242,7 @@ const locData = (data: FullReportQueryResult) => {
     []
   );
 
-  const series: Chart.ChartDataSets[] = [
+  const series = [
     {
       label: 'Deletions',
       data: deletionsByWeek,
@@ -255,28 +278,32 @@ function ContributionOverTimeGraph({ data }: TimeValueGraphProps) {
             datasets: seriesData,
           }}
           options={{
+            elements: {
+              line: {
+                tension: 0.5,
+                fill: true,
+              },
+            },
             responsive: true,
             maintainAspectRatio: false,
             spanGaps: true,
-            tooltips: {
-              mode: 'index',
+            plugins: {
+              tooltip: {
+                mode: 'index',
+              },
             },
             scales: {
-              xAxes: [
-                {
-                  type: 'time',
-                  time: {
-                    unit: 'week',
-                  },
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'week',
                 },
-              ],
+              },
 
-              yAxes: [
-                {
-                  stacked: true,
-                  offset: true,
-                },
-              ],
+              y: {
+                stacked: true,
+                offset: true,
+              },
             },
           }}
         />
@@ -287,28 +314,32 @@ function ContributionOverTimeGraph({ data }: TimeValueGraphProps) {
             datasets: averagedSeriesData,
           }}
           options={{
+            elements: {
+              line: {
+                tension: 0.5,
+                fill: true,
+              },
+            },
             responsive: true,
             maintainAspectRatio: false,
             spanGaps: true,
-            tooltips: {
-              mode: 'index',
+            plugins: {
+              tooltip: {
+                mode: 'index',
+              },
             },
             scales: {
-              xAxes: [
-                {
-                  type: 'time',
-                  time: {
-                    unit: 'week',
-                  },
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'week',
                 },
-              ],
+              },
 
-              yAxes: [
-                {
-                  stacked: true,
-                  offset: true,
-                },
-              ],
+              y: {
+                stacked: true,
+                offset: true,
+              },
             },
           }}
         />
@@ -319,28 +350,32 @@ function ContributionOverTimeGraph({ data }: TimeValueGraphProps) {
             datasets: locDataResult,
           }}
           options={{
+            elements: {
+              line: {
+                tension: 0.5,
+                fill: true,
+              },
+            },
             responsive: true,
             maintainAspectRatio: false,
             spanGaps: true,
-            tooltips: {
-              mode: 'index',
+            plugins: {
+              tooltip: {
+                mode: 'index',
+              },
             },
             scales: {
-              xAxes: [
-                {
-                  type: 'time',
-                  time: {
-                    unit: 'week',
-                  },
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'week',
                 },
-              ],
+              },
 
-              yAxes: [
-                {
-                  stacked: true,
-                  offset: true,
-                },
-              ],
+              y: {
+                stacked: true,
+                offset: true,
+              },
             },
           }}
         />
@@ -351,28 +386,32 @@ function ContributionOverTimeGraph({ data }: TimeValueGraphProps) {
             datasets: locDataAverages,
           }}
           options={{
+            elements: {
+              line: {
+                tension: 0.5,
+                fill: true,
+              },
+            },
             responsive: true,
             maintainAspectRatio: false,
             spanGaps: true,
-            tooltips: {
-              mode: 'index',
+            plugins: {
+              tooltip: {
+                mode: 'index',
+              },
             },
             scales: {
-              xAxes: [
-                {
-                  type: 'time',
-                  time: {
-                    unit: 'week',
-                  },
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'week',
                 },
-              ],
+              },
 
-              yAxes: [
-                {
-                  stacked: true,
-                  offset: true,
-                },
-              ],
+              y: {
+                stacked: true,
+                offset: true,
+              },
             },
           }}
         />

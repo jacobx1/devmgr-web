@@ -15,12 +15,13 @@ import {
   compareStrings,
   swapDirection,
 } from '../engineer-overview/compare';
+import moment from 'moment';
 
 interface PullRequestTableProps {
   engineerResult: EngineerBatchResult;
 }
 
-type PRColumnType = 'opened' | 'merged' | 'added' | 'removed';
+type PRColumnType = 'opened' | 'merged' | 'added' | 'removed' | 'cycle';
 
 interface ColumnState {
   orderBy: PRColumnType;
@@ -56,19 +57,31 @@ export default function PullRequestTable({
   const data = engineerResult.result;
   const sortedPrs = useMemo(
     () =>
-      [...data.pullRequests.nodes].sort((e1, e2) => {
-        const [item1, item2] = swapDirection(columnState.direction, e1, e2);
-        switch (columnState.orderBy) {
-          case 'added':
-            return compareNumbers(item1.additions, item2.additions);
-          case 'removed':
-            return compareNumbers(item1.deletions, item2.deletions);
-          case 'opened':
-            return compareStrings(item1.createdAt, item2.createdAt);
-          case 'merged':
-            return compareStrings(item1.mergedAt || '', item2.mergedAt || '');
-        }
-      }),
+      [...data.pullRequests.nodes]
+        .map((node) => ({
+          ...node,
+          cycleTime: node.merged
+            ? moment(node.mergedAt).diff(node.createdAt, 'days')
+            : undefined,
+        }))
+        .sort((e1, e2) => {
+          const [item1, item2] = swapDirection(columnState.direction, e1, e2);
+          switch (columnState.orderBy) {
+            case 'added':
+              return compareNumbers(item1.additions, item2.additions);
+            case 'removed':
+              return compareNumbers(item1.deletions, item2.deletions);
+            case 'opened':
+              return compareStrings(item1.createdAt, item2.createdAt);
+            case 'merged':
+              return compareStrings(item1.mergedAt || '', item2.mergedAt || '');
+            case 'cycle':
+              return (
+                (item2.cycleTime !== undefined ? item2.cycleTime : -1) -
+                (item1.cycleTime !== undefined ? item1.cycleTime : -1)
+              );
+          }
+        }),
     [columnState, data.pullRequests.nodes]
   );
 
@@ -110,6 +123,16 @@ export default function PullRequestTable({
             </th>
             <th>
               <SortToggleBase
+                id="cycle"
+                orderBy={columnState.orderBy}
+                direction={columnState.direction}
+                onClick={toggleColumn}
+              >
+                Cycle
+              </SortToggleBase>
+            </th>
+            <th>
+              <SortToggleBase
                 id="added"
                 orderBy={columnState.orderBy}
                 direction={columnState.direction}
@@ -143,6 +166,7 @@ export default function PullRequestTable({
               </td>
               <td>{node.createdAt}</td>
               <td>{node.mergedAt}</td>
+              <td>{node.cycleTime}</td>
               <td>
                 <Added added={node.additions} />
               </td>

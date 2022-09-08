@@ -4,6 +4,7 @@ import Diff from './Diff';
 import { LinkContainer } from 'react-router-bootstrap';
 import SortToggle from './SortToggle';
 import {
+  averageCycleTimeSelector,
   averagePrsPerWeekSelector,
   codeLinesAddedSelector,
   codeLinesRemovedSelector,
@@ -107,6 +108,9 @@ export default function EngineerOverview() {
               <SortToggle id="commits">commits</SortToggle>
             </th>
             <th>
+              <SortToggle id="cycle">avg cycle</SortToggle>
+            </th>
+            <th>
               <SortToggle id="prsPerWeek">prs per week</SortToggle>
             </th>
             <th>
@@ -143,6 +147,7 @@ export default function EngineerOverview() {
                   }
                 </td>
                 <td>{data.contributionsCollection.totalCommitContributions}</td>
+                <td>{averageCycleTimeSelector(result).toFixed(2)}</td>
                 <td>{averagePrsPerWeekSelector(result).toFixed(2)}</td>
                 <td>
                   <Diff added={totalPrAdded} removed={totalPrRemoved} />

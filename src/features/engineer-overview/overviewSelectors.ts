@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { compareValues, swapDirection } from './compare';
 import {
+  averageCycleTimeSelector,
   averagePrsPerWeekSelector,
   codeLinesChangesSelector,
   issueContributionsSelector,
@@ -24,6 +25,7 @@ const compareMap = {
   commits: totalCommitsSelector,
   prsPerWeek: averagePrsPerWeekSelector,
   code: codeLinesChangesSelector,
+  cycle: averageCycleTimeSelector,
 };
 
 export const sortedOverviewRowsSelector = createSelector(
